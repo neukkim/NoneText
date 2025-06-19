@@ -1,41 +1,5 @@
 
-import Foundation
 import SwiftUI
-
-//struct ResultView: View {
-//    let image: UIImage
-//    @ObservedObject var visionManager: VisionManager
-//
-//    var body: some View {
-//        GeometryReader { geometry in
-//            ZStack {
-//                Image(uiImage: image)
-//                    .resizable()
-//                    .scaledToFit()
-//
-//                ForEach(visionManager.textBoxes.indices, id: \.self) { i in
-//                    let rect = convertToViewCoordinates(
-//                        visionManager.textBoxes[i],
-//                        imageSize: visionManager.imageSize,
-//                        viewSize: geometry.size
-//                    )
-//                    Rectangle()
-//                        .stroke(Color.red, lineWidth: 2)
-//                        .frame(width: rect.width, height: rect.height)
-//                        .position(x: rect.midX, y: rect.midY)
-//                }
-//            }
-//        }
-//    }
-//
-//    func convertToViewCoordinates(_ box: CGRect, imageSize: CGSize, viewSize: CGSize) -> CGRect {
-//        let width = viewSize.width * box.width
-//        let height = viewSize.height * box.height
-//        let x = viewSize.width * box.minX
-//        let y = (1 - box.maxY) * viewSize.height
-//        return CGRect(x: x, y: y, width: width, height: height)
-//    }
-//}
 
 struct ResultView: View {
     let image: UIImage
@@ -52,57 +16,55 @@ struct ResultView: View {
             // 2. 이미지 + 오버레이 박스
             ZStack {
                 Image(uiImage: image)
+//                    .resizable()
+//                    .scaledToFit()
+//                    .frame(height: 200)
+////                    .frame(maxWidth: .infinity, maxHeight: 200)
+//                    .cornerRadius(12)
+//                    .overlay(
+//                        GeometryReader { geometry in
+//                            ForEach(visionManager.textBoxes.indices, id: \.self) { i in
+//                                let box = visionManager.textBoxes[i]
+//                                let rect = convertToViewCoordinates(box, imageSize: visionManager.imageSize, viewSize: geometry.size)
+//
+//                                Rectangle()
+//                                    .stroke(boxLabel(for: i) == "Text" ? Color.red : Color.blue, lineWidth: 2)
+//                                    .frame(width: rect.width, height: rect.height)
+//                                    .position(x: rect.midX, y: rect.midY)
+//                                    .overlay(
+//                                        Text(boxLabel(for: i))
+//                                            .font(.caption2)
+//                                            .foregroundColor(boxLabel(for: i) == "Text" ? .red : .blue)
+//                                            .padding(4)
+//                                            .background(Color.white)
+//                                            .cornerRadius(4),
+//                                        alignment: .topLeading
+//                                    )
+//                            }
+//                        }
+//                    )
+                
+                
                     .resizable()
+//                            .scaledToFill()
+//                            .clipped()
                     .scaledToFit()
-                    .frame(height: 200)
-                    .cornerRadius(12)
-                    .overlay(
-                        GeometryReader { geometry in
-                            ForEach(visionManager.textBoxes.indices, id: \.self) { i in
-                                let box = visionManager.textBoxes[i]
-                                let rect = convertToViewCoordinates(box, imageSize: visionManager.imageSize, viewSize: geometry.size)
-
-                                Rectangle()
-                                    .stroke(boxLabel(for: i) == "Text" ? Color.red : Color.blue, lineWidth: 2)
-                                    .frame(width: rect.width, height: rect.height)
-                                    .position(x: rect.midX, y: rect.midY)
-                                    .overlay(
-                                        Text(boxLabel(for: i))
-                                            .font(.caption2)
-                                            .foregroundColor(boxLabel(for: i) == "Text" ? .red : .blue)
-                                            .padding(4)
-                                            .background(Color.white)
-                                            .cornerRadius(4),
-                                        alignment: .topLeading
-                                    )
-                            }
-                        }
-                    )
+                    .frame(height: 300)
+                    .cornerRadius(16)
 
             }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
             
             
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.gray.opacity(0.8), lineWidth: 2.0)
-                        .frame(height: 200)
-
-//                    if let image = selectedImage {
-//                        Image(uiImage: image)
-//                            .resizable()
-//                            .scaledToFill()
-//                            .frame(height: 200)
-//                            .clipped()
-//                            .cornerRadius(16)
-//                    } else {
-//                        Image(systemName: "plus")
-//                            .font(.system(size: 50))
-//                            .foregroundColor(.gray)
-//                    }
-                    Image(systemName: "plus")
-                        .font(.system(size: 50))
-                        .foregroundColor(.gray)
-                }
+//                ZStack {
+//                    RoundedRectangle(cornerRadius: 16)
+//                        .stroke(Color.gray.opacity(0.8), lineWidth: 2.0)
+//                        .frame(height: 200)
+//                    Image(systemName: "plus")
+//                        .font(.system(size: 50))
+//                        .foregroundColor(.gray)
+//                }
             
             
             
@@ -125,7 +87,22 @@ struct ResultView: View {
                     .cornerRadius(12)
             }
             .padding(.horizontal)
+//            Spacer()
+            
+            Button(action: {
+                // 👉 이미지 추출 화면으로 이동
+            }) {
+                Text("이미지 추출 보기")
+                    .foregroundColor(.black)
+                    .font(.system(size: 20, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.gray.opacity(0.8))
+                    .cornerRadius(12)
+            }
+            .padding(.horizontal)
             Spacer()
+            
         }
         .padding(.top)
         .navigationBarBackButtonHidden(false)

@@ -25,9 +25,10 @@ struct ContentView: View {
                     if let image = selectedImage {
                         Image(uiImage: image)
                             .resizable()
-                            .scaledToFill()
-                            .frame(height: 200)
-                            .clipped()
+//                            .scaledToFill()
+//                            .clipped()
+                            .scaledToFit()
+                            .frame(height: 300)
                             .cornerRadius(16)
                     } else {
                         Image(systemName: "plus")
