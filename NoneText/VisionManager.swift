@@ -1,35 +1,33 @@
-import Foundation
 import Vision
-import UIKit
 import SwiftUI
 
 class VisionManager: ObservableObject {
     @Published var textBoxes: [CGRect] = []
-    @Published var imageSize: CGSize = .zero
+    @Published var textContents: [String] = []
+    var imageSize: CGSize = .zero
 
     func detectText(in image: UIImage) {
         guard let cgImage = image.cgImage else { return }
+
         imageSize = CGSize(width: cgImage.width, height: cgImage.height)
 
-        let request = VNRecognizeTextRequest { [weak self] request, _ in
-            guard let self = self else { return }
+        let request = VNRecognizeTextRequest { request, error in
             DispatchQueue.main.async {
-                self.textBoxes = (request.results as? [VNRecognizedTextObservation])?.map {
-                    $0.boundingBox
-                } ?? []
+                self.textBoxes = []
+                self.textContents = []
+
+                guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
+
+                for obs in observations {
+                    self.textBoxes.append(obs.boundingBox)
+                    if let topText = obs.topCandidates(1).first {
+                        self.textContents.append(topText.string)
+                    }
+                }
             }
         }
 
-        request.recognitionLevel = .accurate
-        
-        //아래 VNRecognizeTextRequest 옵션 강화
-        request.usesLanguageCorrection = true
-        request.recognitionLevel = .accurate
-        request.recognitionLanguages = ["ko", "en"] // 한국어 포함 시
-
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        DispatchQueue.global(qos: .userInitiated).async {
-            try? handler.perform([request])
-        }
+        try? handler.perform([request])
     }
 }

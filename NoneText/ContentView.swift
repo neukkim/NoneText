@@ -2,64 +2,72 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedImage: UIImage?
-    @State private var showPicker = false
-    @StateObject var visionManager = VisionManager()
+    @State private var showImagePicker = false
+    @State private var selectedOption = "Vision" // "Vision" or "CoreML"
 
     var body: some View {
-        VStack {
-            if let image = selectedImage {
-                GeometryReader { geometry in
-                    ZStack {
+        VStack(spacing: 40) {
+            // 1. 타이틀
+            Text("Text Detector")
+                .font(.largeTitle)
+                .bold()
+                .padding(.top, 40)
+
+            // 2. 이미지 선택 박스
+            Button {
+                showImagePicker = true
+            } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.gray.opacity(0.8), lineWidth: 2.0)
+                        .frame(height: 200)
+
+                    if let image = selectedImage {
                         Image(uiImage: image)
                             .resizable()
-                            .scaledToFit()
-
-                        ForEach(visionManager.textBoxes, id: \.self) { box in
-                            let rect = convertToViewCoordinates(box, imageSize: visionManager.imageSize, viewSize: geometry.size)
-                            Rectangle()
-                                .stroke(Color.red, lineWidth: 2)
-                                .frame(width: rect.width, height: rect.height)
-                                .position(x: rect.midX, y: rect.midY)
-                        }
+                            .scaledToFill()
+                            .frame(height: 200)
+                            .clipped()
+                            .cornerRadius(16)
+                    } else {
+                        Image(systemName: "plus")
+                            .font(.system(size: 50))
+                            .foregroundColor(.gray)
                     }
                 }
-                .frame(height: 400)
             }
+            .padding(.horizontal)
 
-            Button("이미지 선택") {
-                showPicker = true
+            // 3. 분석 방식 Picker (Segmented)
+            Picker("분석 방식", selection: $selectedOption) {
+                Text("Vision").tag("Vision")
+                Text("CoreML").tag("CoreML")
             }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            
+            // 4. 분석 시작 버튼
+            Button("분석 시작") {
+                // 👉 여기에 VisionManager or CoreML 분석 로직 연결 예정
+            }
+            .foregroundColor(.white)
+            .font(.system(size: 20, weight: .semibold))
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.black)
+            .cornerRadius(12)
+            .padding(.horizontal)
+            .disabled(selectedImage == nil)
 
-            if selectedImage != nil {
-                Button("텍스트 감지 실행") {
-                    visionManager.detectText(in: selectedImage!)
-                }
-                .padding(.top, 10)
-            }
+            Spacer()
         }
-        .sheet(isPresented: $showPicker) {
+        .sheet(isPresented: $showImagePicker) {
             ImagePicker(selectedImage: $selectedImage)
         }
-        .padding()
     }
-
-//    func convertToViewCoordinates(_ box: CGRect, imageSize: CGSize, viewSize: CGSize) -> CGRect {
-//        let width = box.width * viewSize.width
-//        let height = box.height * viewSize.height
-//        let x = box.minX * viewSize.width
-//        let y = (1 - box.maxY) * viewSize.height
-//        return CGRect(x: x, y: y, width: width, height: height)
-//    }
-    func convertToViewCoordinates(_ box: CGRect, imageSize: CGSize, viewSize: CGSize) -> CGRect {
-        let width = viewSize.width * box.width
-        let height = viewSize.height * box.height
-        let x = viewSize.width * box.minX
-        let y = (1 - box.maxY) * viewSize.height
-        return CGRect(x: x, y: y, width: width, height: height)
-    }
-
 }
 
 #Preview {
     ContentView()
 }
+
