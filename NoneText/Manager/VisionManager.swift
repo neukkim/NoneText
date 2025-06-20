@@ -31,3 +31,13 @@ class VisionManager: ObservableObject {
         try? handler.perform([request])
     }
 }
+
+class DummyVisionManager {
+    var textBoxes: [CGRect]
+    var imageSize: CGSize
+
+    init(textBoxes: [CGRect], imageSize: CGSize = CGSize(width: 300, height: 300)) {
+        self.textBoxes = textBoxes
+        self.imageSize = imageSize
+    }
+}

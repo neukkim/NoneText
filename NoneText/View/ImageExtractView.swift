@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ImageExtractView: View {
-    let croppedImages: [UIImage]
+    @ObservedObject var viewModel: ImageExtractViewModel
 
     var body: some View {
         VStack {
@@ -11,9 +11,9 @@ struct ImageExtractView: View {
                 .padding()
 
                 List {
-                    ForEach(croppedImages.indices, id: \.self) { index in
+                    ForEach(viewModel.croppedImages.indices, id: \.self) { index in
                         HStack(spacing: 64) {
-                            Image(uiImage: croppedImages[index])
+                            Image(uiImage: viewModel.croppedImages[index])
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 100, height: 100)
@@ -60,6 +60,9 @@ struct ImageExtractView: View {
     let dummyImage2 = UIImage(systemName: "photo.fill")!
     let dummyImage3 = UIImage(systemName: "photo.on.rectangle")!
 
-    return ImageExtractView(croppedImages: [dummyImage1, dummyImage2, dummyImage3])
+    let testviewModel = ImageExtractViewModel(croppedImages: [dummyImage1, dummyImage2, dummyImage3])
+    
+    return ImageExtractView(viewModel: testviewModel)
+
 }
 
