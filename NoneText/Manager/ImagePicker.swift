@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 
+//UIViewControllerRepresentable 는 View 프로토콜 사용, View 기반은 struct로 구현돼게 설계되었음
 struct ImagePicker: UIViewControllerRepresentable {
     var imageHandler: (UIImage) -> Void
     @Environment(\.presentationMode) var presentationMode
