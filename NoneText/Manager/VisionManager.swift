@@ -5,9 +5,9 @@ import UIKit
 
 class VisionManager {
     var textBoxes: [CGRect] = []
+    var recognizedStrings: [String] = [] // ✅ 텍스트 내용 추가
     var imageSize: CGSize = .zero
 
-    /// Vision 프레임워크를 사용하여 텍스트 박스를 추출
     func analyze(image: UIImage, completion: @escaping () -> Void) {
         guard let cgImage = image.cgImage else {
             completion()
@@ -22,13 +22,20 @@ class VisionManager {
                 return
             }
 
-            self.textBoxes = observations.compactMap { observation in
-                let boundingBox = observation.boundingBox
-                let x = boundingBox.origin.x * CGFloat(cgImage.width)
-                let y = (1 - boundingBox.origin.y - boundingBox.size.height) * CGFloat(cgImage.height)
-                let width = boundingBox.size.width * CGFloat(cgImage.width)
-                let height = boundingBox.size.height * CGFloat(cgImage.height)
-                return CGRect(x: x, y: y, width: width, height: height)
+            self.textBoxes = []
+            self.recognizedStrings = []
+
+            for obs in observations {
+                if let candidate = obs.topCandidates(1).first {
+                    self.recognizedStrings.append(candidate.string)
+
+                    let box = obs.boundingBox
+                    let x = box.origin.x * CGFloat(cgImage.width)
+                    let y = (1 - box.origin.y - box.height) * CGFloat(cgImage.height)
+                    let width = box.size.width * CGFloat(cgImage.width)
+                    let height = box.size.height * CGFloat(cgImage.height)
+                    self.textBoxes.append(CGRect(x: x, y: y, width: width, height: height))
+                }
             }
 
             DispatchQueue.main.async {
@@ -44,62 +51,26 @@ class VisionManager {
     }
 }
 
-//class VisionManager: ObservableObject {
-//    @Published var textBoxes: [CGRect] = []
-//    @Published var textContents: [String] = []
-//    var imageSize: CGSize = .zero
+
+//class DummyVisionManager {
+//    var textBoxes: [CGRect]
+//    var imageSize: CGSize
 //    
-//    // 분석 추가
-//    static func recognizeText(from image: UIImage, completion: @escaping ([VNRecognizedTextObservation]) -> Void) {
-//        guard let cgImage = image.cgImage else { return }
-//
-//        let request = VNRecognizeTextRequest { request, error in
-//            if let results = request.results as? [VNRecognizedTextObservation] {
-//                DispatchQueue.main.async {
-//                    completion(results)
-//                }
-//            }
-//        }
-//
-//        request.recognitionLanguages = ["en-US", "ko-KR"]
-//        request.recognitionLevel = .accurate
-//
-//        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-//        try? handler.perform([request])
-//    }
-//    
-//    func detectText(in image: UIImage) {
-//        guard let cgImage = image.cgImage else { return }
-//        
-//        imageSize = CGSize(width: cgImage.width, height: cgImage.height)
-//        
-//        let request = VNRecognizeTextRequest { request, error in
-//            DispatchQueue.main.async {
-//                self.textBoxes = []
-//                self.textContents = []
-//                
-//                guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
-//                
-//                for obs in observations {
-//                    self.textBoxes.append(obs.boundingBox)
-//                    if let topText = obs.topCandidates(1).first {
-//                        self.textContents.append(topText.string)
-//                    }
-//                }
-//            }
-//        }
-//        
-//        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-//        try? handler.perform([request])
+//    init(textBoxes: [CGRect], imageSize: CGSize = CGSize(width: 300, height: 300)) {
+//        self.textBoxes = textBoxes
+//        self.imageSize = imageSize
 //    }
 //}
 
 class DummyVisionManager {
     var textBoxes: [CGRect]
+    var recognizedStrings: [String]
     var imageSize: CGSize
-    
-    init(textBoxes: [CGRect], imageSize: CGSize = CGSize(width: 300, height: 300)) {
+
+    init(textBoxes: [CGRect], recognizedStrings: [String] = [], imageSize: CGSize = CGSize(width: 300, height: 300)) {
         self.textBoxes = textBoxes
+        self.recognizedStrings = recognizedStrings
         self.imageSize = imageSize
     }
 }
+

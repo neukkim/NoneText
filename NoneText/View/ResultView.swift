@@ -19,22 +19,30 @@ struct ResultView: View {
                     .scaledToFit()
                     .overlay(
                         GeometryReader { geometry in
+                            // 텍스트 박스
                             ForEach(viewModel.textBoxes.indices, id: \.self) { i in
-                                let rect = viewModel.convertToViewCoordinates(
-                                    viewModel.textBoxes[i],
-                                    viewSize: geometry.size
-                                )
+                                let rect = viewModel.convertToViewCoordinates(viewModel.textBoxes[i], viewSize: geometry.size)
                                 Rectangle()
-                                    .stroke(Color.red, lineWidth: 2)
+                                    .stroke(Color.blue, lineWidth: 2)
                                     .frame(width: rect.width, height: rect.height)
                                     .position(x: rect.midX, y: rect.midY)
                             }
+
+                            // 비텍스트 박스
+                            ForEach(viewModel.nonTextBoxes.indices, id: \.self) { i in
+                                let rect = viewModel.convertToViewCoordinates(viewModel.nonTextBoxes[i], viewSize: geometry.size)
+                                Rectangle()
+                                    .stroke(Color.green, lineWidth: 2)
+                                    .frame(width: rect.width, height: rect.height)
+                                    .position(x: rect.midX, y: rect.midY)
+                            }
+
                         }
                     )
             }
             .cornerRadius(12)
             
-            Text("텍스트: \(viewModel.textCount)개 / 비텍스트: \(viewModel.nonTextCount)개")
+            Text("텍스트 라인: \(viewModel.textCount)개 / 비텍스트: \(viewModel.nonTextCount)개")
                 .font(.subheadline)
             
             Button(action: {
