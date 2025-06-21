@@ -51,18 +51,37 @@ struct ContentView: View {
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
                 
-                Button("분석 시작") {
-                    if let image = selectionViewModel.selectedImage {
-                        resultViewModel = ResultViewModel(
-                            image: image,
-                            textBoxes: [],
-                            imageSize: image.size
-                        )
-                        isNavigatingToResult = true
-                        print("이미지 O, 분석 시작 버튼")
-                    }
+                // 단순 페이지 이동 수단
+//                Button("분석 시작") {
+//                    if let image = selectionViewModel.selectedImage {
+//                        resultViewModel = ResultViewModel(
+//                            image: image,
+//                            textBoxes: [],
+//                            imageSize: image.size
+//                        )
+//                        isNavigatingToResult = true
+//                        print("이미지 O, 분석 시작 버튼")
+//                    }
                     // viewModel.selectedImage 를 분석기로 넘기면 됨
+//                }
+                // vision or CoreML 분석 시작 
+                Button("분석 시작") {
+                    guard let image = selectionViewModel.selectedImage else { return }
+
+                    if selectedOption == "Vision" {
+                        let visionManager = VisionManager()
+                        visionManager.analyze(image: image) {
+                            let resultVM = ResultViewModel(image: image, visionManager: visionManager)
+                            self.resultViewModel = resultVM
+                            self.isNavigatingToResult = true
+                        }
+                    } else {
+                        // CoreML 등 다른 방식은 추후 구현 예정
+                        print("CoreML 분석은 아직 구현되지 않음")
+                    }
                 }
+
+                
                 .foregroundColor(.white)
                 .font(.system(size: 20, weight: .semibold))
                 .frame(maxWidth: .infinity)
