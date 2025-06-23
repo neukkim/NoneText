@@ -45,6 +45,7 @@ class VisionManager {
 
         request.recognitionLanguages = ["ko-KR", "en-US"]
         request.recognitionLevel = .accurate
+        request.usesLanguageCorrection = true
 
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         try? handler.perform([request])

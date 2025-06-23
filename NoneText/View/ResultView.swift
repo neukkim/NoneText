@@ -7,74 +7,94 @@ struct ResultView: View {
     @State private var showImageView = false
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("분석 결과")
-                .font(.title2)
-                .bold()
-                .padding(.top)
-            
-            ZStack {
-                Image(uiImage: viewModel.image)
-                    .resizable()
-                    .scaledToFit()
-                    .overlay(
-                        GeometryReader { geometry in
-                            // 텍스트 박스
-                            ForEach(viewModel.textBoxes.indices, id: \.self) { i in
-                                let rect = viewModel.convertToViewCoordinates(viewModel.textBoxes[i], viewSize: geometry.size)
-                                Rectangle()
-                                    .stroke(Color.blue, lineWidth: 2)
-                                    .frame(width: rect.width, height: rect.height)
-                                    .position(x: rect.midX, y: rect.midY)
+        NavigationStack {
+            VStack(spacing: 20) {
+                Text("분석 결과")
+                    .font(.title2)
+                    .bold()
+                    .padding(.top)
+                
+                ZStack {
+                    Image(uiImage: viewModel.image)
+                        .resizable()
+                        .scaledToFit()
+                        .overlay(
+                            GeometryReader { geometry in
+                                // 텍스트 박스
+                                ForEach(viewModel.textBoxes.indices, id: \.self) { i in
+                                    let rect = viewModel.convertToViewCoordinates(viewModel.textBoxes[i], viewSize: geometry.size)
+                                    Rectangle()
+                                        .stroke(Color.blue, lineWidth: 2)
+                                        .frame(width: rect.width, height: rect.height)
+                                        .position(x: rect.midX, y: rect.midY)
+                                }
+                                
+                                // 비텍스트 박스
+                                ForEach(viewModel.nonTextBoxes.indices, id: \.self) { i in
+                                    let rect = viewModel.convertToViewCoordinates(viewModel.nonTextBoxes[i], viewSize: geometry.size)
+                                    Rectangle()
+                                        .stroke(Color.green, lineWidth: 2)
+                                        .frame(width: rect.width, height: rect.height)
+                                        .position(x: rect.midX, y: rect.midY)
+                                }
+                                
                             }
-
-                            // 비텍스트 박스
-                            ForEach(viewModel.nonTextBoxes.indices, id: \.self) { i in
-                                let rect = viewModel.convertToViewCoordinates(viewModel.nonTextBoxes[i], viewSize: geometry.size)
-                                Rectangle()
-                                    .stroke(Color.green, lineWidth: 2)
-                                    .frame(width: rect.width, height: rect.height)
-                                    .position(x: rect.midX, y: rect.midY)
-                            }
-
-                        }
+                        )
+                }
+                .cornerRadius(12)
+                
+                Text("텍스트 라인: \(viewModel.textCount)개 / 비텍스트: \(viewModel.nonTextCount)개")
+                    .font(.subheadline)
+                
+                NavigationLink(
+                    destination: TextExtractView(
+                        viewModel: TextExtractViewModel(texts: viewModel.extractedTexts)
                     )
+                ) {
+                    Text("텍스트 추출 보기")
+                        .foregroundColor(.black)
+                        .font(.system(size: 20, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.gray.opacity(0.8))
+                        .cornerRadius(12)
+                }
+                .onTapGesture {
+                    print("nvi 클릭")
+                }
+                .padding(.horizontal)
+                
+                //            Button(action: {
+                //                // 텍스트 추출 화면으로 이동
+                //            }) {
+                //                Text("텍스트 추출 보기")
+                //                    .foregroundColor(.black)
+                //                    .font(.system(size: 20, weight: .semibold))
+                //                    .frame(maxWidth: .infinity)
+                //                    .padding()
+                //                    .background(Color.gray.opacity(0.8))
+                //                    .cornerRadius(12)
+                //            }
+                //            .padding(.horizontal)
+                //            Spacer()
+                
+                Button(action: {
+                    // 👉 이미지 추출 화면으로 이동
+                }) {
+                    Text("이미지 추출 보기")
+                        .foregroundColor(.black)
+                        .font(.system(size: 20, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.gray.opacity(0.8))
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal)
+                Spacer()
+                
             }
-            .cornerRadius(12)
-            
-            Text("텍스트 라인: \(viewModel.textCount)개 / 비텍스트: \(viewModel.nonTextCount)개")
-                .font(.subheadline)
-            
-            Button(action: {
-                // 텍스트 추출 화면으로 이동
-            }) {
-                Text("텍스트 추출 보기")
-                    .foregroundColor(.black)
-                    .font(.system(size: 20, weight: .semibold))
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.gray.opacity(0.8))
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal)
-            //            Spacer()
-            
-            Button(action: {
-                // 👉 이미지 추출 화면으로 이동
-            }) {
-                Text("이미지 추출 보기")
-                    .foregroundColor(.black)
-                    .font(.system(size: 20, weight: .semibold))
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.gray.opacity(0.8))
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal)
-            Spacer()
-            
+            .padding()
         }
-        .padding()
     } // End body
 }// End View
 
